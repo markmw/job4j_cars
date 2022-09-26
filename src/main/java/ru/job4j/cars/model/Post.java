@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "auto_post")
@@ -21,6 +23,24 @@ public class Post {
     private String text;
     private LocalDateTime created;
 
-    @Column(name = "auto_user_id")
-    private int userId;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.REFRESH, CascadeType.DETACH})
+    @JoinColumn(name = "auto_user_id")
+    private User user;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.REFRESH, CascadeType.DETACH})
+    @JoinTable(
+            name = "participants",
+            joinColumns = {@JoinColumn(name = "post_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")}
+    )
+    private Set<User> participants;
+
+    public void addParticipantToPost(User user) {
+        if (participants == null) {
+            participants = new HashSet<>();
+        }
+        participants.add(user);
+    }
 }

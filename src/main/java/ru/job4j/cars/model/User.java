@@ -3,6 +3,7 @@ package ru.job4j.cars.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Data
 @Entity
@@ -13,4 +14,7 @@ public class User {
     private int id;
     private String login;
     private String password;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private Set<Post> posts;
 }
