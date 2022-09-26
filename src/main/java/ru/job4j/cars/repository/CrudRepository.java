@@ -1,4 +1,4 @@
-package ru.job4j.cars.model.repository;
+package ru.job4j.cars.repository;
 
 import lombok.AllArgsConstructor;
 import org.hibernate.Session;
@@ -47,7 +47,7 @@ public class CrudRepository {
             for (Map.Entry<String, Object> arg : args.entrySet()) {
                 sq.setParameter(arg.getKey(), arg.getValue());
             }
-            return Optional.ofNullable(sq.getSingleResultOrNull());
+            return Optional.ofNullable(sq.getSingleResult());
         };
         return tx(command);
     }
