@@ -37,6 +37,10 @@ public class Post {
     )
     private Set<User> participants;
 
+    @ManyToOne
+    @JoinColumn(name = "car_id")
+    private Car car;
+
     public void addParticipantToPost(User user) {
         if (participants == null) {
             participants = new HashSet<>();
