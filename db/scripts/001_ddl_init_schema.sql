@@ -9,16 +9,16 @@ CREATE TABLE car (
     engine_id INT NOT NULL UNIQUE REFERENCES engine(id)
 );
 
-CREATE TABLE driver (
-    id SERIAL PRIMARY KEY,
-    name TEXT,
-    user_id INT NOT NULL UNIQUE REFERENCES auto_user(id)
-);
-
 CREATE TABLE auto_user (
                        id SERIAL PRIMARY KEY,
                        login VARCHAR NOT NULL UNIQUE,
                        password VARCHAR NOT NULL
+);
+
+CREATE TABLE driver (
+    id SERIAL PRIMARY KEY,
+    name TEXT,
+    user_id INT NOT NULL UNIQUE REFERENCES auto_user(id)
 );
 
 CREATE TABLE auto_post (
