@@ -1,93 +1,52 @@
 package ru.job4j.cars.repository;
 
 import lombok.AllArgsConstructor;
+import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import ru.job4j.cars.model.User;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @Repository
 @AllArgsConstructor
 public class UserRepository {
     private final CrudRepository crudRepository;
 
-    /**
-     * Сохранить в базе.
-     * @param user пользователь.
-     * @return пользователь с id.
-     */
     public User create(User user) {
-        crudRepository.run(session -> session.persist(user));
+        crudRepository.tx((Consumer<Session>) session -> session.persist(user));
         return user;
     }
 
-    /**
-     * Обновить в базе пользователя.
-     * @param user пользователь.
-     */
     public void update(User user) {
-        crudRepository.run(session -> session.merge(user));
+        crudRepository.tx((Consumer<Session>) session -> session.merge(user));
     }
 
-    /**
-     * Удалить пользователя по id.
-     * @param userId ID
-     */
-    public void delete(int userId) {
-        crudRepository.run(
-                "delete from User where id = fId",
-                Map.of("fId", userId)
-        );
+    public void delete(User user) {
+        crudRepository.tx((Consumer<Session>) session -> session.delete(user));
     }
 
-    /**
-     * Список пользователь отсортированных по id.
-     * @return список пользователей.
-     */
     public List<User> findAllOrderById() {
-        return crudRepository.query("from User", User.class);
+        return crudRepository.getList("from User order by id", User.class);
     }
 
-    /**
-     * Найти пользователя по ID
-     * @return пользователь.
-     */
-    public Optional<User> findById(int id) {
-        return crudRepository.optional(
-                "from User where id = :fId", User.class,
-                Map.of("fId", id)
-        );
+    public Optional<User> findById(int userId) {
+        return crudRepository.getUniqResult(
+                "from User where id = :userId",
+                Map.of("userId", userId), User.class);
     }
 
-    /**
-     * Список пользователей по login LIKE %key%
-     * @param key key
-     * @return список пользователей.
-     */
     public List<User> findByLikeLogin(String key) {
-        return crudRepository.query(
-                "from User where login like :fKey", User.class,
-                Map.of("fKey", "%" + key + "%")
-        );
+        return crudRepository.getList(
+                "from User where login like :key",
+                Map.of("key", "%" + key.toLowerCase() + "%"), User.class);
     }
 
-    /**
-     * Найти пользователя по login.
-     * @param login login.
-     * @return Optional or user.
-     */
-    public Optional<User> findByLogin(String login) {
-        return crudRepository.optional(
-                "from User where login = :fLogin", User.class,
-                Map.of("fLogin", login)
-        );
-    }
-
-    public Optional<User> findUserByEmailAndPwd(User user) {
-        return crudRepository.optional(
-                "from User as u where u.login = :fLogin and u.password = :fPassword", User.class,
-                Map.of("fLogin", user.getLogin(), "fPassword", user.getPassword()));
+    public Optional<User> findByLogin(String key) {
+        return crudRepository.getUniqResult(
+                "from User where login like :key",
+                Map.of("key", key), User.class);
     }
 }

@@ -1,33 +1,36 @@
 package ru.job4j.cars.model;
 
 import lombok.*;
-import lombok.EqualsAndHashCode.Include;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "price_history")
-@Getter
-@Setter
-@ToString
 public class PriceHistory {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Include
     private int id;
 
+    @Column(name = "before")
     private int before;
+
+    @Column(name = "after")
     private int after;
+
+    @Column(name = "created")
     private LocalDateTime created;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "price_history_id")
-    private List<Post> posts;
+    @ManyToOne
+    @JoinColumn(name = "p_user_id")
+    private Post post;
 
     @Override
     public boolean equals(Object o) {
