@@ -1,30 +1,50 @@
-CREATE TABLE engine (
+create table auto_user(
+    id serial primary key,
+    login text,
+    password text
+);
+
+create table auto_post(
+    id serial primary key,
+    text text,
+    created timestamp,
+    user_id int references auto_user(id)
+);
+
+CREATE TABLE price_history(
     id SERIAL PRIMARY KEY,
-    name TEXT
+    before BIGINT not null,
+    after BIGINT not null,
+    created TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    p_user_id int references auto_user(id)
 );
 
-CREATE TABLE car (
-    id SERIAL PRIMARY KEY,
-    name TEXT,
-    engine_id INT NOT NULL UNIQUE REFERENCES engine(id)
+CREATE TABLE participates (
+    id serial PRIMARY KEY,
+    user_id int not null REFERENCES auto_user(id),
+    post_id int not null REFERENCES auto_post(id)
 );
 
-CREATE TABLE auto_user (
-                       id SERIAL PRIMARY KEY,
-                       login VARCHAR NOT NULL UNIQUE,
-                       password VARCHAR NOT NULL
+create table engine (
+    id serial primary key,
+    name text
 );
 
-CREATE TABLE driver (
-    id SERIAL PRIMARY KEY,
-    name TEXT,
-    user_id INT NOT NULL UNIQUE REFERENCES auto_user(id)
+create table car (
+    id serial primary key,
+    name text,
+    engine_id int references engine(id)
 );
 
-CREATE TABLE auto_post (
-                     id SERIAL PRIMARY KEY,
-                     text VARCHAR NOT NULL,
-                     created TIMESTAMP NOT NULL,
-                     auto_user_id INTEGER REFERENCES auto_user(id),
-                     car_id INTEGER NOT NULL REFERENCES car(id)
+create table driver (
+    id serial primary key,
+    name text,
+    user_id int references auto_user(id)
 );
+
+create table history_owner (
+    id serial primary key,
+    driver_id int references driver(id),
+    car_id int references car(id)
+);
+

@@ -40,4 +40,9 @@ public class PostRepository {
                 Map.of("fModel", model)
         );
     }
+
+    public Post add(Post post) {
+        crudRepository.run(session -> session.persist(post));
+        return post;
+    }
 }
